@@ -106,7 +106,7 @@
 
             const nis = document.getElementById('nis').value.trim();
             const token = document.getElementById('token').value.trim();
-            const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbzgM9gkWutHXm3FzvTfh9jphxBUA-zEN6KWnoeiUhUddWpZHb7UlpIt9-cWxpswVOnj/exec";
 
             fetch(`${scriptURL}?nis=${encodeURIComponent(nis)}&token=${encodeURIComponent(token)}`)
             .then(res => res.text())
