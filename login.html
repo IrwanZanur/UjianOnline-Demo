@@ -1,45 +1,133 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Login Ujian</title>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <title>Login Ujian</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .login-container {
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 30px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+        .login-container input {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            width: 80%;
+            font-size: 16px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            background-color: #3498db;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 10px;
+            transition: filter 0.3s ease, opacity 0.3s ease;
+        }
+        .login-container button:disabled {
+            filter: grayscale(100%);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .judul {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .countdown {
+            font-size: 10pt;
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h2>Login Ujian</h2>
-  <form id="loginForm">
-    <label>NIS:</label><br>
-    <input type="text" id="nis" required><br>
-    <label>Token:</label><br>
-    <input type="text" id="token" required><br><br>
-    <button type="submit">Login</button>
-  </form>
+    <div class="login-container">
+        <div class="judul">Pendidikan Pancasila dan Kewarganegaraan</div>
+        <img class="logo" src="https://lh3.googleusercontent.com/d/1Em6kwqdZfG27aKHEV8EUv4ehlKPCO_kN" alt="Logo" width="150">
+        <div id="countdown" class="countdown"></div>
+        <form id="loginForm">
+            <input type="text" id="nis" placeholder="Masukkan NIS" required />
+            <input type="text" id="token" placeholder="Masukkan Token" required />
+            <button type="submit" id="loginBtn" disabled>Mulai Ujian</button>
+        </form>
+    </div>
 
-  <p id="status" style="color: red;"></p>
+    <script>
+        const startTime = new Date("2025-06-11T18:30:00+07:00").getTime();
+        const endTime = new Date("2025-06-11T21:30:00+07:00").getTime();
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const nis = document.getElementById('nis').value.trim();
-      const token = document.getElementById('token').value.trim();
-      const status = document.getElementById('status');
-      
-      fetch(`https://script.google.com/macros/s/AKfycbwYAUC1xDdSBNe8JDOQk8p-TlWNyRgQNbXHtfbREW_FiYkNOsBUPduHCBRO8jW5uNIX/exec?nis=${nis}&token=${token}`)
-        .then(res => res.text())
-        .then(result => {
-          if (result === "VALID") {
-            // Redirect ke halaman form ujian jika token valid
-            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSchV-Q5jvtlv74NeX5gEi-8Y-LZcLhfOvQm4mZmK1TEHKTQBQ/viewform";
-          } else {
-            status.textContent = "Token salah atau sudah kedaluwarsa.";
-          }
-        })
-        .catch(err => {
-          status.textContent = "Terjadi kesalahan jaringan.";
-          console.error(err);
+        const countdownEl = document.getElementById("countdown");
+        const loginBtn = document.getElementById("loginBtn");
+
+        const countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+
+            if (now >= startTime && now < endTime) {
+                loginBtn.disabled = false;
+                countdownEl.innerHTML = "Login telah dibuka.";
+            } else if (now >= endTime) {
+                loginBtn.disabled = true;
+                countdownEl.innerHTML = "Waktu login telah ditutup.";
+            } else {
+                const distance = startTime - now;
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                countdownEl.innerHTML = `Login akan dibuka dalam: ${days} hari ${hours} jam ${minutes} menit ${seconds} detik`;
+            }
+        }, 1000);
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nis = document.getElementById('nis').value.trim();
+            const token = document.getElementById('token').value.trim();
+            const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
+
+            fetch(`${scriptURL}?nis=${encodeURIComponent(nis)}&token=${encodeURIComponent(token)}`)
+            .then(res => res.text())
+            .then(result => {
+                if (result === "VALID") {
+                    const url = "https://forms.gle/epUL9ndhgoSf9oDp9";
+                    const newTab = window.open(url, "_blank");
+                    if (!newTab) {
+                        alert("Popup diblokir oleh browser. Harap izinkan popup untuk membuka form.");
+                    } else {
+                        newTab.focus();
+                    }
+                } else {
+                    alert("Token atau NIS salah.");
+                }
+            })
+            .catch(err => {
+                alert("Gagal menghubungi server.");
+                console.error(err);
+            });
         });
-    });
-  </script>
+    </script>
 </body>
 </html>
