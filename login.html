@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Ujian</title>
+  <style>
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 100px; }
+    input, button { padding: 10px; margin: 5px; width: 300px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h2>Login Ujian</h2>
+  <input id="nis" type="text" placeholder="Masukkan NIS">
+  <input id="token" type="text" placeholder="Masukkan Token">
+  <button onclick="submitLogin()">Mulai Ujian</button>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // Ganti dengan URL Script kamu
+
+    function submitLogin() {
+      const nis = document.getElementById("nis").value.trim();
+      const token = document.getElementById("token").value.trim();
+
+      if (!nis || !token) return alert("NIS dan Token harus diisi!");
+
+      fetch(`${scriptURL}?nis=${nis}&token=${token}`)
+        .then(res => res.text())
+        .then(res => {
+          if (res === "VALID") {
+            sessionStorage.setItem("nis", nis);
+            window.location.href = "ujian.html";
+          } else if (res === "EXPIRED") {
+            alert("Token sudah tidak berlaku.");
+          } else {
+            alert("Token atau NIS salah.");
+          }
+        });
+    }
+  </script>
+</body>
+</html>
