@@ -3,39 +3,43 @@
 <html>
 <head>
   <title>Login Ujian</title>
-  <style>
-    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 100px; }
-    input, button { padding: 10px; margin: 5px; width: 300px; font-size: 16px; }
-  </style>
+  <meta charset="UTF-8">
 </head>
 <body>
   <h2>Login Ujian</h2>
-  <input id="nis" type="text" placeholder="Masukkan NIS">
-  <input id="token" type="text" placeholder="Masukkan Token">
-  <button onclick="submitLogin()">Mulai Ujian</button>
+  <form id="loginForm">
+    <label>NIS:</label><br>
+    <input type="text" id="nis" required><br>
+    <label>Token:</label><br>
+    <input type="text" id="token" required><br><br>
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="status" style="color: red;"></p>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // Ganti dengan URL Script kamu
-
-    function submitLogin() {
-      const nis = document.getElementById("nis").value.trim();
-      const token = document.getElementById("token").value.trim();
-
-      if (!nis || !token) return alert("NIS dan Token harus diisi!");
-
-      fetch(`${scriptURL}?nis=${nis}&token=${token}`)
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const nis = document.getElementById('nis').value.trim();
+      const token = document.getElementById('token').value.trim();
+      const status = document.getElementById('status');
+      
+      fetch(`https://script.google.com/macros/s/AKfycbwYAUC1xDdSBNe8JDOQk8p-TlWNyRgQNbXHtfbREW_FiYkNOsBUPduHCBRO8jW5uNIX/exec?nis=${nis}&token=${token}`)
         .then(res => res.text())
-        .then(res => {
-          if (res === "VALID") {
-            sessionStorage.setItem("nis", nis);
-            window.location.href = "ujian.html";
-          } else if (res === "EXPIRED") {
-            alert("Token sudah tidak berlaku.");
+        .then(result => {
+          if (result === "VALID") {
+            // Redirect ke halaman form ujian jika token valid
+            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSchV-Q5jvtlv74NeX5gEi-8Y-LZcLhfOvQm4mZmK1TEHKTQBQ/viewform";
           } else {
-            alert("Token atau NIS salah.");
+            status.textContent = "Token salah atau sudah kedaluwarsa.";
           }
+        })
+        .catch(err => {
+          status.textContent = "Terjadi kesalahan jaringan.";
+          console.error(err);
         });
-    }
+    });
   </script>
 </body>
 </html>
